@@ -3,7 +3,7 @@
  * filesig CLI — detect file types from magic bytes.
  */
 
-import { detectFile, detectWithExt, listAll, DetectResult } from './index.js';
+import { detectWithExt, listAll, DetectResult } from './index.js';
 import { readFileSync, statSync } from 'fs';
 import { basename, extname } from 'path';
 
