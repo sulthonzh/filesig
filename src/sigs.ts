@@ -19,7 +19,6 @@ export interface FileSignature {
 }
 
 export const signatures: FileSignature[] = [
-  // ─── Images ────────────────────────────────────────────────────────
   { name: 'JPEG', mime: 'image/jpeg', ext: ['jpg', 'jpeg'], category: 'image', magic: 'FFD8FF' },
   { name: 'PNG', mime: 'image/png', ext: ['png'], category: 'image', magic: '89504E470D0A1A0A' },
   { name: 'GIF', mime: 'image/gif', ext: ['gif'], category: 'image', magic: '47494638' }, // GIF8
@@ -35,7 +34,6 @@ export const signatures: FileSignature[] = [
   }},
   { name: 'AVIF', mime: 'image/avif', ext: ['avif'], category: 'image', offset: 4, magic: '6674797061766966' },
 
-  // ─── Audio ─────────────────────────────────────────────────────────
   { name: 'MP3 (ID3)', mime: 'audio/mpeg', ext: ['mp3'], category: 'audio', magic: '494433' },
   { name: 'MP3', mime: 'audio/mpeg', ext: ['mp3'], category: 'audio', magic: 'FFF3' },
   { name: 'MP3 (sync)', mime: 'audio/mpeg', ext: ['mp3'], category: 'audio', magic: 'FFF2' },
@@ -46,7 +44,6 @@ export const signatures: FileSignature[] = [
   { name: 'MIDI', mime: 'audio/midi', ext: ['mid', 'midi'], category: 'audio', magic: '4D546864' },
   { name: 'WMA', mime: 'audio/x-ms-wma', ext: ['wma'], category: 'audio', magic: '3026B2758E66CF11' },
 
-  // ─── Video ─────────────────────────────────────────────────────────
   { name: 'MP4', mime: 'video/mp4', ext: ['mp4', 'm4v'], category: 'video', magic: (buf: Buffer) => {
     if (buf.length < 12) return false;
     const size = buf.readUInt32BE(0);
@@ -62,7 +59,6 @@ export const signatures: FileSignature[] = [
            (buf.toString('utf8', 4, 8) === 'ftyp' && buf.toString('utf8', 8, 12).match(/qt\s*/) !== null);
   }},
 
-  // ─── Documents ─────────────────────────────────────────────────────
   { name: 'PDF', mime: 'application/pdf', ext: ['pdf'], category: 'document', magic: '25504446' }, // %PDF
   { name: 'PostScript', mime: 'application/postscript', ext: ['ps'], category: 'document', magic: '25215053' },
   { name: 'DOCX', mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', ext: ['docx'], category: 'document', magic: '504B0304' },
@@ -71,7 +67,6 @@ export const signatures: FileSignature[] = [
   { name: 'DOC', mime: 'application/msword', ext: ['doc'], category: 'document', magic: 'D0CF11E0A1B11AE1' },
   { name: 'RTF', mime: 'application/rtf', ext: ['rtf'], category: 'document', magic: '7B5C727466' },
 
-  // ─── Archives ──────────────────────────────────────────────────────
   { name: 'ZIP', mime: 'application/zip', ext: ['zip'], category: 'archive', magic: '504B0304' },
   { name: 'GZIP', mime: 'application/gzip', ext: ['gz'], category: 'archive', magic: '1F8B' },
   { name: 'BZ2', mime: 'application/x-bzip2', ext: ['bz2'], category: 'archive', magic: '425A68' },
@@ -83,14 +78,12 @@ export const signatures: FileSignature[] = [
     return buf.length >= 262 && buf.toString('utf8', 257, 262) === 'ustar';
   }},
 
-  // ─── Executables ───────────────────────────────────────────────────
   { name: 'ELF', mime: 'application/x-elf', ext: ['elf', 'bin', 'so', 'o'], category: 'executable', magic: '7F454C46' },
   { name: 'PE (EXE)', mime: 'application/x-msdownload', ext: ['exe', 'dll'], category: 'executable', magic: '4D5A' }, // MZ
   { name: 'Mach-O 64', mime: 'application/x-mach-binary', ext: ['macho'], category: 'executable', magic: 'FEEDFACF' },
   { name: 'Mach-O 32', mime: 'application/x-mach-binary', ext: ['macho'], category: 'executable', magic: 'FEEDFACE' },
   { name: 'Mach-O (FAT)', mime: 'application/x-mach-binary', ext: ['macho'], category: 'executable', magic: 'CAFEBABE' },
 
-  // ─── Fonts ─────────────────────────────────────────────────────────
   { name: 'TrueType', mime: 'font/ttf', ext: ['ttf'], category: 'font', magic: '00010000' },
   { name: 'OpenType', mime: 'font/otf', ext: ['otf'], category: 'font', magic: '4F54544F' },
   { name: 'WOFF', mime: 'font/woff', ext: ['woff'], category: 'font', magic: '774F4646' },
@@ -99,7 +92,6 @@ export const signatures: FileSignature[] = [
     return buf.length >= 36 && buf.readUInt32BE(34) === 0x4C50;
   }},
 
-  // ─── Data / Config ─────────────────────────────────────────────────
   { name: 'SQLite', mime: 'application/x-sqlite3', ext: ['sqlite', 'db'], category: 'data', magic: '53514C69746520666F726D61742033' },
   { name: 'Parquet', mime: 'application/vnd.apache.parquet', ext: ['parquet'], category: 'data', magic: '50415231' },
   { name: 'Java Class', mime: 'application/java-vm', ext: ['class'], category: 'data', magic: 'CAFEBABE' },
@@ -111,7 +103,6 @@ export const signatures: FileSignature[] = [
   }},
   { name: 'ISO', mime: 'application/x-iso9660-image', ext: ['iso'], category: 'data', offset: 32769, magic: '4344303031' }, // CD001
 
-  // ─── Other ─────────────────────────────────────────────────────────
   { name: 'Pcap', mime: 'application/vnd.tcpdump.pcap', ext: ['pcap'], category: 'other', magic: 'D4C3B2A1' },
   { name: 'PcapNG', mime: 'application/vnd.tcpdump.pcap', ext: ['pcapng'], category: 'other', magic: '0A0D0D0A' },
 ];

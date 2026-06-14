@@ -3,8 +3,8 @@
  */
 
 import { signatures, disambiguateZip, disambiguateRIFF } from './sigs.js';
-import { existsSync, readFileSync, statSync } from 'fs';
-import { extname, basename } from 'path';
+import { existsSync, readFileSync } from 'fs';
+import { extname } from 'path';
 
 export interface DetectResult {
   name: string;
@@ -29,7 +29,6 @@ export function detect(buf: Buffer): DetectResult | null {
       if (buf.length < offset + magicBuf.length) continue;
       const slice = buf.subarray(offset, offset + magicBuf.length);
       if (slice.equals(magicBuf)) {
-        // Disambiguate ambiguous signatures
         if (sig.name === 'ZIP' || sig.name === 'DOCX' || sig.name === 'XLSX' || sig.name === 'PPTX') {
           const refined = disambiguateZip(buf);
           if (refined) return { ...refined, category: refined.category, confidence: 0.95 };
@@ -42,7 +41,6 @@ export function detect(buf: Buffer): DetectResult | null {
         return { name: sig.name, mime: sig.mime, ext: sig.ext, category: sig.category, confidence: 0.95 };
       }
     } else {
-      // Function-based magic
       try {
         if (sig.magic(buf)) {
           return { name: sig.name, mime: sig.mime, ext: sig.ext, category: sig.category, confidence: 0.85 };
@@ -63,7 +61,6 @@ function detectText(buf: Buffer): DetectResult | null {
 
   const text = sample.toString('utf8');
 
-  // JSON
   if ((text.startsWith('{') && text.includes('}')) || (text.startsWith('[') && text.includes(']'))) {
     try {
       JSON.parse(text);
@@ -71,27 +68,22 @@ function detectText(buf: Buffer): DetectResult | null {
     } catch { /* not JSON */ }
   }
 
-  // XML
   if (text.trimStart().startsWith('<?xml') || text.trimStart().startsWith('<')) {
     return { name: 'XML', mime: 'application/xml', ext: ['xml'], category: 'data', confidence: 0.7 };
   }
 
-  // YAML (basic heuristic)
   if (text.includes('---\n') || (text.includes(': ') && text.includes('\n') && !text.includes('{'))) {
     return { name: 'YAML', mime: 'text/yaml', ext: ['yml', 'yaml'], category: 'data', confidence: 0.5 };
   }
 
-  // Shell script
   if (text.startsWith('#!/bin/sh') || text.startsWith('#!/bin/bash') || text.startsWith('#!/usr/bin/env sh') || text.startsWith('#!/usr/bin/env bash')) {
     return { name: 'Shell Script', mime: 'text/x-shellscript', ext: ['sh'], category: 'data', confidence: 0.9 };
   }
 
-  // Python
   if (text.startsWith('#!/usr/bin/env python') || text.startsWith('#!/usr/bin/python')) {
     return { name: 'Python Script', mime: 'text/x-python', ext: ['py'], category: 'data', confidence: 0.9 };
   }
 
-  // Generic text
   return { name: 'Text', mime: 'text/plain', ext: ['txt'], category: 'data', confidence: 0.3 };
 }
 
@@ -101,10 +93,7 @@ function detectText(buf: Buffer): DetectResult | null {
  */
 export function detectFile(filePath: string): DetectResult | null {
   if (!existsSync(filePath)) return null;
-  const stat = statSync(filePath);
-  const readSize = Math.min(stat.size, 65536);
   const buf = readFileSync(filePath);
-  const sample = buf.subarray(0, Math.min(buf.length, readSize));
   return detect(buf);
 }
 
@@ -116,11 +105,9 @@ export function detectWithExt(buf: Buffer, filePath: string): DetectResult | nul
   const ext = extname(filePath).toLowerCase().replace('.', '');
 
   if (!result) {
-    // Fallback: guess from extension only
     return guessFromExt(ext);
   }
 
-  // Boost confidence if extension matches
   if (result.ext.includes(ext)) {
     return { ...result, confidence: 1.0 };
   }
