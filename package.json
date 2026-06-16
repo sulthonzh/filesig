@@ -1,5 +1,5 @@
 {
-  "name": "filesig",
+  "name": "@quadbyte/filesig",
   "version": "1.0.0",
   "description": "Zero-dep file type detector using magic bytes and file signatures. Detects 50+ formats from content, not extensions.",
   "main": "dist/index.js",
@@ -30,5 +30,8 @@
   "devDependencies": {
     "@types/node": "^25.9.1",
     "typescript": "^6.0.3"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
