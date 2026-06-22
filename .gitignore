@@ -35,3 +35,7 @@ Thumbs.db
 # custom
 tmp_test/
 build/
+__pycache__/
+.venv/
+*.egg-info/
+.mypy_cache/
