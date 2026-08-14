@@ -25,7 +25,8 @@
     "url": "https://github.com/sulthonzh/filesig"
   },
   "files": [
-    "dist"
+    "dist",
+    "!dist/test"
   ],
   "devDependencies": {
     "@changesets/cli": "^3.0.0",
